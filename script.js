@@ -9,21 +9,34 @@ const registryTableBody = document.getElementById("registry-table-body");
 const chatBox = document.getElementById("chatBox");
 const question = document.getElementById("question");
 
-function showToast(message, type = "info") {
-    const container = document.getElementById("toast-container");
-    const toast = document.createElement("div");
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    let icon = "ℹ️";
-    if (type === "success") icon = "✅";
-    if (type === "error") icon = "❌";
-    toast.innerHTML = `${icon} ${message}`;
+
+    let icon = '<i class="fa-solid fa-circle-info" style="color: var(--cyber-yellow)"></i>';
+    if(type === 'success') icon = '<i class="fa-solid fa-circle-check" style="color: var(--emerald-green)"></i>';
+    if(type === 'error') icon = '<i class="fa-solid fa-triangle-exclamation" style="color: var(--crimson-red)"></i>';
+
+    toast.innerHTML = `${icon} <span>${message}</span>`;
     container.appendChild(toast);
-    setTimeout(() => toast.classList.add("active"), 50);
+
+    setTimeout(() => toast.classList.add('active'), 30);
     setTimeout(() => {
-        toast.classList.remove("active");
+        toast.classList.remove('active');
         setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    }, 4000);
 }
+
+document.querySelectorAll(".tab-btn").forEach(t => {
+    t.onclick = () => {
+        document.querySelectorAll(".tab-btn").forEach(x => x.classList.remove("active"));
+        t.classList.add("active");
+
+        document.querySelectorAll(".view-pane").forEach(p => p.classList.remove("active"));
+        document.getElementById(t.dataset.tab).classList.add("active");
+    }
+});
 
 function getStorageSyncKeys() {
     return JSON.parse(localStorage.getItem("kni_api_registry")) || [];
@@ -31,55 +44,75 @@ function getStorageSyncKeys() {
 
 function saveKeyToStorage(user, key) {
     const registry = getStorageSyncKeys();
-    registry.push({ timestamp: new Date().toLocaleString(), username: user, key });
+    registry.push({
+        timestamp: new Date().toLocaleString(),
+        username: user,
+        key: key
+    });
     localStorage.setItem("kni_api_registry", JSON.stringify(registry));
     renderRegistryTable();
-}
-
-function renderRegistryTable() {
-    registryTableBody.innerHTML = "";
-    const registry = getStorageSyncKeys();
-    if (!registry.length) {
-        registryTableBody.innerHTML = `<tr><td colspan="4">No API Keys Found</td></tr>`;
-        return;
-    }
-    registry.forEach((item, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${item.timestamp}</td>
-            <td>${item.username}</td>
-            <td>${item.key}</td>
-            <td><button onclick="deleteKeyFromStorage(${index})">Delete</button></td>
-        `;
-        registryTableBody.appendChild(row);
-    });
 }
 
 async function deleteKeyFromServer(apiKey) {
     try {
         await fetch(BASE + "/api/delete", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify({ api_key: apiKey })
         });
-    } catch (e) {}
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 function deleteKeyFromStorage(index) {
     const registry = getStorageSyncKeys();
-    const key = registry[index].key;
+    const deletedKey = registry[index].key;
+
     registry.splice(index, 1);
     localStorage.setItem("kni_api_registry", JSON.stringify(registry));
+
     renderRegistryTable();
-    deleteKeyFromServer(key);
-    showToast("Key deleted", "success");
+    deleteKeyFromServer(deletedKey);
+
+    showToast("Key removed locally + server request sent", "info");
+}
+
+function renderRegistryTable() {
+    registryTableBody.innerHTML = "";
+    const registry = getStorageSyncKeys();
+
+    if (registry.length === 0) {
+        registryTableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">No API Keys Found .</td></tr>`;
+        return;
+    }
+
+    registry.forEach((item, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${item.timestamp}</td>
+            <td style="font-weight: 600;">${item.username}</td>
+            <td class="font-mono">${item.key}</td>
+            <td>
+                <button class="delete-btn" onclick="deleteKeyFromStorage(${index})">
+                    <i class="fa-regular fa-trash-can"></i>
+                </button>
+            </td>
+        `;
+        registryTableBody.appendChild(row);
+    });
 }
 
 document.getElementById("createBtn").onclick = async () => {
     const userVal = username.value.trim();
-    if (!userVal) return showToast("Username required", "error");
+    if (!userVal) {
+        showToast("Developer identification alias is required.", "error");
+        return;
+    }
 
-    statusInfo.innerText = "Creating key...";
+    statusInfo.innerText = "Querying local execution socket loops...";
 
     try {
         const res = await fetch(BASE + "/api/create", {
@@ -88,32 +121,46 @@ document.getElementById("createBtn").onclick = async () => {
             body: JSON.stringify({ username: userVal })
         });
 
+        if (!res.ok) {
+            const errData = await res.json();
+            showToast(`Backend Rejection: ${errData.detail || 'Invalid params'}`, "error");
+            statusInfo.innerText = "Execution Refused";
+            return;
+        }
+
         const data = await res.json();
-
-        if (!res.ok) return showToast(data.detail || "Error", "error");
-
         apiKey.value = data.api_key;
-        statusInfo.innerText = "ACTIVE";
-        statusBadge.innerText = "ONLINE";
+        statusInfo.innerText = "API Key Active";
+        statusBadge.className = "system-tag online";
+        statusBadge.innerText = "KERNEL ACTIVE";
 
         saveKeyToStorage(userVal, data.api_key);
-        showToast("API Key Created", "success");
+        showToast("Authorization tokens provisioned and indexed locally.", "success");
+
     } catch (err) {
-        showToast("Server Offline", "error");
+        console.error(err);
+        statusInfo.innerText = "Link Failure";
+        statusBadge.className = "system-tag offline";
+        statusBadge.innerText = "SERVER : INACTIVE";
+        showToast("SERVER OFFLINE", "error");
     }
 };
 
 function copyValue(id) {
     const field = document.getElementById(id);
-    if (!field.value) return showToast("Nothing to copy", "error");
+    if (!field.value || field.value.includes("Awaiting")) {
+        showToast("No active tracking string available to extract.", "error");
+        return;
+    }
+    field.select();
     navigator.clipboard.writeText(field.value);
-    showToast("Copied", "success");
+    showToast("Token configuration copied to browser clipboard.", "success");
 }
 
 function addMsg(text, type) {
     const div = document.createElement("div");
     div.className = "msg " + type;
-    div.innerText = text;
+    div.innerHTML = text;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
@@ -125,6 +172,13 @@ document.getElementById("askBtn").onclick = async () => {
     addMsg(promptInput, "user");
     question.value = "";
 
+    if (GROQ_API_KEY === "api_key_add") {
+        setTimeout(() => {
+            addMsg("Groq AI Engine routing is currently suspended. Please update the placeholder variable 'api_key_add' inside your script.js configuration file.", "ai");
+        }, 400);
+        return;
+    }
+
     try {
         const response = await fetch("https://api.groq.com/v1/chat/completions", {
             method: "POST",
@@ -135,16 +189,28 @@ document.getElementById("askBtn").onclick = async () => {
             body: JSON.stringify({
                 model: "llama3-8b-8192",
                 messages: [
-                    { role: "system", content: "You are a helpful AI assistant." },
-                    { role: "user", content: promptInput }
-                ]
+                    {
+                        role: "system",
+                        content: "You are the KNI Core AI Oracle, an interactive expert system."
+                    },
+                    {
+                        role: "user",
+                        content: promptInput
+                    }
+                ],
+                temperature: 0.5,
+                max_tokens: 1024
             })
         });
 
-        const data = await response.json();
-        addMsg(data.choices[0].message.content, "ai");
-    } catch (e) {
-        addMsg("AI error", "ai");
+        if (!response.ok) throw new Error("API error");
+
+        const payload = await response.json();
+        addMsg(payload.choices[0].message.content, "ai");
+
+    } catch (error) {
+        console.error(error);
+        addMsg("AI error occurred", "ai");
     }
 };
 
