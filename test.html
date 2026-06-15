@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>API Tester</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #0f172a;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .box {
+        background: #1e293b;
+        padding: 20px;
+        border-radius: 12px;
+        width: 400px;
+    }
+
+    input, textarea {
+        width: 100%;
+        margin: 8px 0;
+        padding: 10px;
+        border: none;
+        border-radius: 6px;
+    }
+
+    button {
+        width: 48%;
+        padding: 10px;
+        margin-top: 10px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .get {
+        background: #22c55e;
+    }
+
+    .post {
+        background: #3b82f6;
+    }
+
+    .output {
+        margin-top: 10px;
+        background: #0b1220;
+        padding: 10px;
+        height: 120px;
+        overflow: auto;
+        border-radius: 6px;
+        font-size: 13px;
+    }
+</style>
+</head>
+<body>
+
+<div class="box">
+
+    <h3>API Tester</h3>
+
+    <input id="apiUrl" placeholder="API Base URL (e.g. https://3a00a07f-d4fa-41e2-8d42-0986417b4be2-00-3hn75onbv7xor.sisko.replit.dev )">
+    <input id="apiKey" placeholder="API Key">
+    <textarea id="textInput" placeholder="Enter text to send"></textarea>
+
+    <div style="display:flex; justify-content:space-between;">
+        <button class="get" onclick="sendGET()">GET</button>
+        <button class="post" onclick="sendPOST()">POST</button>
+    </div>
+
+    <div class="output" id="output">Response will appear here...</div>
+</div>
+
+<script>
+async function sendPOST() {
+    let url = document.getElementById("apiUrl").value;
+    let key = document.getElementById("apiKey").value;
+    let text = document.getElementById("textInput").value;
+
+    try {
+        let res = await fetch(`${url}/api/${key}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ text: text })
+        });
+
+        let data = await res.text();
+        document.getElementById("output").innerText = data;
+
+    } catch (err) {
+        document.getElementById("output").innerText = "Error: " + err;
+    }
+}
+
+async function sendGET() {
+    let url = document.getElementById("apiUrl").value;
+    let key = document.getElementById("apiKey").value;
+
+    try {
+        let res = await fetch(`${url}/api/${key}`);
+        let data = await res.text();
+        document.getElementById("output").innerText = data;
+
+    } catch (err) {
+        document.getElementById("output").innerText = "Error: " + err;
+    }
+}
+</script>
+
+</body>
+</html>
