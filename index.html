@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌿𝙽𝙸𝚁𝙰𝙽𝙹𝙰𝙽 𝙲𝚁𝙴𝙰𝚃𝙸𝙾𝙽𝚂🌿</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="logo.png" type="icon/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="matrix-background"></div>
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="dashboard-viewport">
+
+        <aside class="side-panel">
+            <div class="brand-header">
+                <div class="brand-logo"><img src="logo.png" width=65 height=65> </div>
+                <div class="brand-meta">
+                    <h2>ORGANIZATION</h2>
+                    <span id="status-badge" class="system-tag online">SERVER : ACTIVE </span>
+                </div>
+            </div>
+
+            <div class="creator-profile-vault">
+                <div class="avatar-shield">
+                    <i class="fa-solid fa-terminal"></i>
+                </div>
+                <h3>Niranjan Kumar K</h3>
+                <p class="role-subtitle">Father of K-Lang & KNI OS</p>
+
+                <div class="meta-spec-list">
+                    <div class="meta-row">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span class="clip-text">hackerenvironment1514@gmail.com</span>
+                    </div>
+                    <div class="meta-row">
+                        <i class="fa-solid fa-globe"></i>
+                        <span class="clip-text">kni.org.com@gmail.com</span>
+                    </div>
+                    <div class="meta-row">
+                        <i class="fa-solid fa-phone"></i>
+                        <span>9515888385</span>
+                    </div>
+                </div>
+
+                <a href="https://kni-org.github.io/k/k_programming.pdf" target="_blank" class="spec-button">
+                    <i class="fa-solid fa-file-pdf"></i> Learn K programming now
+                </a>
+            </div>
+
+            <div class="package-tag">
+                <code>developer of python ' kni ' module</code>
+            </div>
+        </aside>
+
+        <main class="main-operations">
+            <nav class="tab-navigation-dock">
+                <button class="tab-btn active" data-tab="provision-page">
+                    <i class="fa-solid fa-key"></i> GENERATE API KEYS
+                </button>
+                <button class="tab-btn" data-tab="registry-page">
+                    <i class="fa-solid fa-database"></i> CREATED API KEYS
+                </button>
+                <button class="tab-btn" data-tab="oracle-page">
+                    <i class="fa-solid fa-brain"></i>GET AI HELP
+                </button>
+            </nav>
+
+            <div class="view-viewport">
+                <section id="provision-page" class="view-pane active">
+                    <div class="section-title">
+                        <h1>Welcome To Free Website</h1>
+                        <p>Generate highly secure development authorization tokens linked directly to public server.</p>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="form-container">
+                            <label>Developer Signature / Alias</label>
+                            <div class="input-glow-wrapper">
+                                <i class="fa-solid fa-user-shield"></i>
+                                <input type="text" id="username" placeholder="e.g., kni_developer_core" required>
+                            </div>
+                            <button id="createBtn" class="action-submit-btn">
+                                <span>GENERATE IMEDIATELY</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="glass-card structure-out">
+                        <div class="card-top-tag">LATEST ENVIRONMENT GENERATION</div>
+                        <div class="output-block">
+                            <label>API AUTHORIZATION KEY</label>
+                            <div class="copy-field-container">
+                                <input type="text" id="apikey" readonly placeholder="Awaiting framework deployment sequence...">
+                                <button class="copy-btn" onclick="copyValue('apikey')"><i class="fa-regular fa-copy"></i></button>
+                            </div>
+                        </div>
+                        <div class="diagnostic-status-bar">
+                            <span class="label-dim">Engine Loop State:</span>
+                            <span id="status" class="status-text-highlight">Idle // Standing By</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="registry-page" class="view-pane">
+                    <div class="section-title">
+                        <h1>WELCOME TO API KEYS STORAGE</h1>
+                        <p>Live structural database containing all compiled application tokens mapped across the system memory.</p>
+                    </div>
+
+                    <div class="glass-card full-table-card">
+                        <div class="table-container">
+                            <table class="registry-table">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Developer Alias</th>
+                                        <th>Generated Token Key</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="registry-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="oracle-page" class="view-pane">
+                    <div class="section-title">
+                        <h1>WELCOME TO AI CHAT</h1>
+                        <p>Fully active engineering intelligence agent processing compiler logic patterns, debugging, and system specifications.</p>
+                    </div>
+
+                    <div class="ai-chat-container">
+                        <div id="chatBox" class="chat-display-terminal">
+                            <div class="msg ai">
+                                Core Knowledge Matrix online. I am perfectly synchronized with the architecture of the <strong>K Programming Language</strong>, <strong>KNI OS</strong> framework, and local endpoint controls. Ask your question below.
+                            </div>
+                        </div>
+                        <div class="chat-input-bar">
+                            <input type="text" id="question" placeholder="Ask about compilers, memory leaks, KNI microkernels, or code patterns...">
+                            <button id="askBtn" class="chat-send-btn">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
