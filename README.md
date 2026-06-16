@@ -207,7 +207,7 @@ This project is available under the MIT License.
 **Niranjan Kumar K**
 
 Passionate about building developer tools, web technologies, and AI-powered applications.
-Father of K programming anf kni os (still not published).
+Father of K programming and kni os (still not published).
 
 ---
 
